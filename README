@@ -1,0 +1,71 @@
+NAME
+    Dancer::Plugin::ValidationClass - Centralized Input Validation For
+    Dancer
+
+VERSION
+    version 0.110190
+
+SYNOPSIS
+        use Dancer;
+        use Dancer::Plugin::ValidationClass;
+
+        post '/authenticate/:login' => sub {
+            unless (validate 'login', 'password') {
+                return validation->errors;
+            }
+        };
+
+        dance;
+
+DESCRIPTION
+    This plugin provides a convenient wrapper around the Validation::Class
+    module for easy, reusable data validation for your Dancer applications.
+    You don't even need to configure it unless your environment isn't a
+    typical one.
+
+CONFIGURATION
+    Connection details will be optionally grabbed from your Dancer config
+    file. For example:
+
+        plugins:
+          ValidationClass:
+            class: Foo::Bar
+        
+        or
+    
+        plugins:
+          ValidationClass:
+            class: lib/Foo/Bar.pm
+
+    If no configuration information is given, this plugin will attempt to
+    use the application's name, as set in the configuration file, and assume
+    the class is $AppName::Validation under the lib directory.
+
+METHODS
+  validate
+    This method return true or false based on whether or not the user-input
+    has passed the validation rules.
+
+        1 if validate 'login', 'password';
+        1 if validate {
+            login => 'users:login',
+            passw => 'users:password'
+        };
+
+  validation
+    This method returns the current Validation::Class instance if one
+    exists.
+
+        unless ( validate 'login', 'password' ) {
+            return validation->errors;
+        }
+
+AUTHOR
+    Al Newkirk <awncorp@cpan.org>
+
+COPYRIGHT AND LICENSE
+    This software is copyright (c) 2010 by awncorp.
+
+    This is free software; you can redistribute it and/or modify it under
+    the same terms as the Perl 5 programming language system itself.
+

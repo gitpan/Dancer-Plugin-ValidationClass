@@ -1,0 +1,11 @@
+LICENSE
+MANIFEST
+META.yml
+Makefile.PL
+README
+dist.ini
+lib/Dancer/Plugin/ValidationClass.pm
+t/00-load.t
+t/01-rundown.t
+t/lib/MyApp/Validation.pm
+t/logs/development.log
