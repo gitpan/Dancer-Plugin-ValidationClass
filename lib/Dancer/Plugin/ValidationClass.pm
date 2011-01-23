@@ -71,7 +71,7 @@ Dancer::Plugin::ValidationClass - Centralized Input Validation For Dancer
 
 =head1 VERSION
 
-version 0.110190
+version 0.110230
 
 =head1 SYNOPSIS
 
