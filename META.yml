@@ -13,6 +13,5 @@ meta-spec:
   version: 1.4
 name: Dancer-Plugin-ValidationClass
 requires:
-  Dancer: 0
   Validation::Class: 0
-version: 0.110230
+version: 0.110280

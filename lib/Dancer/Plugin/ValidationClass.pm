@@ -14,7 +14,35 @@ my $self = undef;
 register validate => sub {
     my @args = @_;
     my $cfg  = plugin_setting;
+    
+    my $self = ref $self ? $self : instantiate($cfg);
 
+    return $self->validate(@args);
+};
+
+register validation => sub {
+    my @args = @_;
+    my $cfg  = plugin_setting;
+
+    if (@args){
+        $self = validation_schema @args;
+        return $self;
+    }
+
+    # when validation is called with no params self will be reset
+    # if self is defined reset and return self
+    if (ref $self) {
+        my $return_value = $self; $self = undef;
+        return $return_value;
+    }
+    else {
+        return instantiate($cfg);
+    }
+};
+
+sub instantiate {
+    my $cfg = shift;
+    
     #find validation class
     my $class = my $path = $cfg->{class};
     $class = setting('appname') . '::Validation' unless $class;
@@ -47,16 +75,8 @@ register validate => sub {
 
     $self = $class->new({ params });
 
-    return $self->validate(@args);
-};
-
-register validation => sub {
-    my @args = @_;
-    my $cfg  = plugin_setting;
-
-    $self = validation_schema @args if @args;
-    return ref $self ? $self : undef;
-};
+    return $self;
+}
 
 register_plugin;
 
@@ -71,7 +91,7 @@ Dancer::Plugin::ValidationClass - Centralized Input Validation For Dancer
 
 =head1 VERSION
 
-version 0.110230
+version 0.110280
 
 =head1 SYNOPSIS
 
@@ -91,6 +111,22 @@ version 0.110230
 This plugin provides a convenient wrapper around the L<Validation::Class> module
 for easy, reusable data validation for your Dancer applications. You don't even
 need to configure it unless your environment isn't a typical one.
+
+=head1 ADVANCED SYNOPSIS
+
+    use Dancer;
+    use Dancer::Plugin::ValidationClass;
+
+    post '/authenticate/:login' => sub {
+        # set params manually (append, not overwrite)
+        my $input = validation;
+        $input->params(login => 'demo');
+        unless ($input->validate 'login', 'password') {
+            return $input->errors;
+        }
+    };
+
+    dance;
 
 =head1 CONFIGURATION
 
@@ -127,9 +163,20 @@ the validation rules.
 =head2 validation
 
 This method returns the current Validation::Class instance if one exists.
+Please note, once validation is called, the current global validation instance
+will be reset.
 
     unless ( validate 'login', 'password' ) {
         return validation->errors;
+    }
+
+If you need to use validation (current global validation instance) more than once,
+please assign it to a variable. e.g.
+
+    unless ( validate 'login', 'password' ) {
+        my $instance = validation;
+        warn join "\n", @{ $instance->errors };
+        return $instance->error_fields;
     }
 
 =head1 AUTHOR

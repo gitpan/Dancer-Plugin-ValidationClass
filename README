@@ -3,7 +3,7 @@ NAME
     Dancer
 
 VERSION
-    version 0.110230
+    version 0.110280
 
 SYNOPSIS
         use Dancer;
@@ -22,6 +22,21 @@ DESCRIPTION
     module for easy, reusable data validation for your Dancer applications.
     You don't even need to configure it unless your environment isn't a
     typical one.
+
+ADVANCED SYNOPSIS
+        use Dancer;
+        use Dancer::Plugin::ValidationClass;
+
+        post '/authenticate/:login' => sub {
+            # set params manually (append, not overwrite)
+            my $input = validation;
+            $input->params(login => 'demo');
+            unless ($input->validate 'login', 'password') {
+                return $input->errors;
+            }
+        };
+
+        dance;
 
 CONFIGURATION
     Connection details will be optionally grabbed from your Dancer config
@@ -54,10 +69,20 @@ METHODS
 
   validation
     This method returns the current Validation::Class instance if one
-    exists.
+    exists. Please note, once validation is called, the current global
+    validation instance will be reset.
 
         unless ( validate 'login', 'password' ) {
             return validation->errors;
+        }
+
+    If you need to use validation (current global validation instance) more
+    than once, please assign it to a variable. e.g.
+
+        unless ( validate 'login', 'password' ) {
+            my $instance = validation;
+            warn join "\n", @{ $instance->errors };
+            return $instance->error_fields;
         }
 
 AUTHOR
