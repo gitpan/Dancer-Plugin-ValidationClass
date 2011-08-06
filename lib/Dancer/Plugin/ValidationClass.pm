@@ -6,42 +6,22 @@ use strict;
 use warnings;
 use Dancer ':syntax';
 use Dancer::Plugin;
-use Validation::Class qw/validation_schema/;
 
 my $self = undef;
 
 
-register validate => sub {
+register rules => sub {
     my @args = @_;
     my $cfg  = plugin_setting;
     
-    my $self = ref $self ? $self : instantiate($cfg);
+    my $self = ref $self ? $self : instantiate($cfg, @args);
 
-    return $self->validate(@args);
-};
-
-register validation => sub {
-    my @args = @_;
-    my $cfg  = plugin_setting;
-
-    if (@args){
-        $self = validation_schema @args;
-        return $self;
-    }
-
-    # when validation is called with no params self will be reset
-    # if self is defined reset and return self
-    if (ref $self) {
-        my $return_value = $self; $self = undef;
-        return $return_value;
-    }
-    else {
-        return instantiate($cfg);
-    }
+    return $self;
 };
 
 sub instantiate {
     my $cfg = shift;
+    my @args = @_;
     
     #find validation class
     my $class = my $path = $cfg->{class};
@@ -60,20 +40,9 @@ sub instantiate {
     {
         no warnings 'redefine';
         require $path unless defined $self;
-        #*{$class . "::params"} = sub {
-        #    my ($self, @params) = @_;
-        #    if (@params) {
-        #        my %params = @params == 1 ? %{$params[0]} : @params;
-        #        $self->{params} = { %params };
-        #        return $self->{params};
-        #    }
-        #    else {
-        #        return $self->{params};
-        #    }
-        #};
     }
 
-    $self = $class->new({ params });
+    $self = $class->new(scalar @args ? {@args} : {params => { params }});
 
     return $self;
 }
@@ -91,7 +60,7 @@ Dancer::Plugin::ValidationClass - Centralized Input Validation For Dancer
 
 =head1 VERSION
 
-version 0.110280
+version 0.112180
 
 =head1 SYNOPSIS
 
@@ -99,8 +68,8 @@ version 0.110280
     use Dancer::Plugin::ValidationClass;
 
     post '/authenticate/:login' => sub {
-        unless (validate 'login', 'password') {
-            return validation->errors;
+        unless (rules->validate('login', 'password')) {
+            return rules->errors->to_string;
         }
     };
 
@@ -118,11 +87,10 @@ need to configure it unless your environment isn't a typical one.
     use Dancer::Plugin::ValidationClass;
 
     post '/authenticate/:login' => sub {
-        # set params manually (append, not overwrite)
-        my $input = validation;
-        $input->params(login => 'demo');
-        unless ($input->validate 'login', 'password') {
-            return $input->errors;
+        
+        # validate everything
+        unless (rules->validate()) {
+            return rules->errors->to_string('<br/>');
         }
     };
 
@@ -149,34 +117,18 @@ $AppName::Validation under the lib directory.
 
 =head1 METHODS
 
-=head2 validate
-
-This method return true or false based on whether or not the user-input has passed
-the validation rules.
-
-    1 if validate 'login', 'password';
-    1 if validate {
-        login => 'users:login',
-        passw => 'users:password'
-    };
-
-=head2 validation
+=head2 rules
 
 This method returns the current Validation::Class instance if one exists.
-Please note, once validation is called, the current global validation instance
-will be reset.
 
-    unless ( validate 'login', 'password' ) {
-        return validation->errors;
-    }
+    1 if rules->validate('login', 'password');
+    1 if rules->validate({
+        login => 'users:login',
+        passw => 'users:password'
+    });
 
-If you need to use validation (current global validation instance) more than once,
-please assign it to a variable. e.g.
-
-    unless ( validate 'login', 'password' ) {
-        my $instance = validation;
-        warn join "\n", @{ $instance->errors };
-        return $instance->error_fields;
+    unless (rules->validate('login', 'password')) {
+        return rules->error; # arrayref of errors
     }
 
 =head1 AUTHOR

@@ -3,15 +3,15 @@ NAME
     Dancer
 
 VERSION
-    version 0.110280
+    version 0.112180
 
 SYNOPSIS
         use Dancer;
         use Dancer::Plugin::ValidationClass;
 
         post '/authenticate/:login' => sub {
-            unless (validate 'login', 'password') {
-                return validation->errors;
+            unless (rules->validate('login', 'password')) {
+                return rules->errors->to_string;
             }
         };
 
@@ -28,11 +28,10 @@ ADVANCED SYNOPSIS
         use Dancer::Plugin::ValidationClass;
 
         post '/authenticate/:login' => sub {
-            # set params manually (append, not overwrite)
-            my $input = validation;
-            $input->params(login => 'demo');
-            unless ($input->validate 'login', 'password') {
-                return $input->errors;
+            
+        # validate everything
+            unless (rules->validate()) {
+                return rules->errors->to_string('<br/>');
             }
         };
 
@@ -45,10 +44,10 @@ CONFIGURATION
         plugins:
           ValidationClass:
             class: Foo::Bar
+            
+    or
         
-        or
-    
-        plugins:
+    plugins:
           ValidationClass:
             class: lib/Foo/Bar.pm
 
@@ -57,32 +56,18 @@ CONFIGURATION
     the class is $AppName::Validation under the lib directory.
 
 METHODS
-  validate
-    This method return true or false based on whether or not the user-input
-    has passed the validation rules.
+  rules
+    This method returns the current Validation::Class instance if one
+    exists.
 
-        1 if validate 'login', 'password';
-        1 if validate {
+        1 if rules->validate('login', 'password');
+        1 if rules->validate({
             login => 'users:login',
             passw => 'users:password'
-        };
+        });
 
-  validation
-    This method returns the current Validation::Class instance if one
-    exists. Please note, once validation is called, the current global
-    validation instance will be reset.
-
-        unless ( validate 'login', 'password' ) {
-            return validation->errors;
-        }
-
-    If you need to use validation (current global validation instance) more
-    than once, please assign it to a variable. e.g.
-
-        unless ( validate 'login', 'password' ) {
-            my $instance = validation;
-            warn join "\n", @{ $instance->errors };
-            return $instance->error_fields;
+        unless (rules->validate('login', 'password')) {
+            return rules->error; # arrayref of errors
         }
 
 AUTHOR
