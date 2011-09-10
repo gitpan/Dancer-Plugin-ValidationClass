@@ -7,21 +7,22 @@ use warnings;
 use Dancer ':syntax';
 use Dancer::Plugin;
 
-my $self = undef;
+our $VERSION = '0.112530'; # VERSION
+
+our $self;
 
 
 register rules => sub {
     my @args = @_;
-    my $cfg  = plugin_setting;
+    my $cfg  = plugin_setting || {};
     
-    my $self = ref $self ? $self : instantiate($cfg, @args);
+    $self = ref $self ? $self : instantiate($cfg->{options} || {}, @args);
 
     return $self;
 };
 
 sub instantiate {
-    my $cfg = shift;
-    my @args = @_;
+    my ($cfg, @args) = @_;
     
     #find validation class
     my $class = my $path = $cfg->{class};
@@ -41,10 +42,10 @@ sub instantiate {
         no warnings 'redefine';
         require $path unless defined $self;
     }
-
-    $self = $class->new(scalar @args ? {@args} : {params => { params }});
-
-    return $self;
+    
+    my $args = { @args }; # specified params supersedes frameworks
+    $cfg->{params} = { params() } unless $args->{params};
+    return $class->new(scalar keys %$args ? $args : $cfg);
 }
 
 register_plugin;
@@ -60,7 +61,7 @@ Dancer::Plugin::ValidationClass - Centralized Input Validation For Dancer
 
 =head1 VERSION
 
-version 0.112180
+version 0.112530
 
 =head1 SYNOPSIS
 
