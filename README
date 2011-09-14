@@ -3,7 +3,7 @@ NAME
     Dancer
 
 VERSION
-    version 0.112530
+    version 0.112570
 
 SYNOPSIS
         use Dancer;

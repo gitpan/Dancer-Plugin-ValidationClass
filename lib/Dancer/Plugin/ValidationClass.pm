@@ -7,20 +7,27 @@ use warnings;
 use Dancer ':syntax';
 use Dancer::Plugin;
 
-our $VERSION = '0.112530'; # VERSION
+our $VERSION = '0.112570'; # VERSION
 
-our $self;
+our $Self;
 
 
+# instance should only remained cached for the duration of the request
+before sub {
+    $Dancer::Plugin::ValidationClass::Self = undef;
+};
+
+# register the keyword
 register rules => sub {
     my @args = @_;
     my $cfg  = plugin_setting || {};
     
-    $self = ref $self ? $self : instantiate($cfg->{options} || {}, @args);
+    $Self = ref $Self ? $Self : instantiate($cfg->{options} || {}, @args);
 
-    return $self;
+    return $Self;
 };
 
+# instantiation routine
 sub instantiate {
     my ($cfg, @args) = @_;
     
@@ -40,7 +47,7 @@ sub instantiate {
 
     {
         no warnings 'redefine';
-        require $path unless defined $self;
+        require $path unless defined $Self;
     }
     
     my $args = { @args }; # specified params supersedes frameworks
@@ -61,7 +68,7 @@ Dancer::Plugin::ValidationClass - Centralized Input Validation For Dancer
 
 =head1 VERSION
 
-version 0.112530
+version 0.112570
 
 =head1 SYNOPSIS
 
