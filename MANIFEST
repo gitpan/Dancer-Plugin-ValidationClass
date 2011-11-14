@@ -9,4 +9,3 @@ t/00-load.t
 t/01-rundown.t
 t/lib/MyApp/Validation.pm
 t/logs/development.log
-t/tmpph61_s.html

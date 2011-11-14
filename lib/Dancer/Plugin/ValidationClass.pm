@@ -7,13 +7,13 @@ use warnings;
 use Dancer ':syntax';
 use Dancer::Plugin;
 
-our $VERSION = '0.112570'; # VERSION
+our $VERSION = '0.113180'; # VERSION
 
 our $Self;
 
 
 # instance should only remained cached for the duration of the request
-before sub {
+hook before => sub {
     $Dancer::Plugin::ValidationClass::Self = undef;
 };
 
@@ -68,7 +68,7 @@ Dancer::Plugin::ValidationClass - Centralized Input Validation For Dancer
 
 =head1 VERSION
 
-version 0.112570
+version 0.113180
 
 =head1 SYNOPSIS
 

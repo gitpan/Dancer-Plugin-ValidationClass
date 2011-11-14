@@ -1,16 +1,15 @@
 package MyApp::Validation;
 
 use Validation::Class;
-use base 'Validation::Class';
 
 field 'login' => {
     required => 1,
-    filter   => 'strip'
+    filters  => 'strip'
 };
 
 field 'password' => {
     required => 1,
-    filter   => 'strip'
+    filters  => 'strip'
 };
 
 1;

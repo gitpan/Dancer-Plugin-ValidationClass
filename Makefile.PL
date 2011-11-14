@@ -9,22 +9,23 @@ use ExtUtils::MakeMaker 6.30;
 
 
 my %WriteMakefileArgs = (
-  'ABSTRACT' => 'Centralized Input Validation For Dancer',
-  'AUTHOR' => 'Al Newkirk <awncorp@cpan.org>',
-  'BUILD_REQUIRES' => {},
-  'CONFIGURE_REQUIRES' => {
-    'ExtUtils::MakeMaker' => '6.30'
+  "ABSTRACT" => "Centralized Input Validation For Dancer",
+  "AUTHOR" => "Al Newkirk <awncorp\@cpan.org>",
+  "BUILD_REQUIRES" => {},
+  "CONFIGURE_REQUIRES" => {
+    "ExtUtils::MakeMaker" => "6.30"
   },
-  'DISTNAME' => 'Dancer-Plugin-ValidationClass',
-  'EXE_FILES' => [],
-  'LICENSE' => 'perl',
-  'NAME' => 'Dancer::Plugin::ValidationClass',
-  'PREREQ_PM' => {
-    'Validation::Class' => '0'
+  "DISTNAME" => "Dancer-Plugin-ValidationClass",
+  "EXE_FILES" => [],
+  "LICENSE" => "perl",
+  "NAME" => "Dancer::Plugin::ValidationClass",
+  "PREREQ_PM" => {
+    "Dancer" => 0,
+    "Validation::Class" => 0
   },
-  'VERSION' => '0.112570',
-  'test' => {
-    'TESTS' => 't/*.t'
+  "VERSION" => "0.113180",
+  "test" => {
+    "TESTS" => "t/*.t"
   }
 );
 
