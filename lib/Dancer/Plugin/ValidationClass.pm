@@ -4,10 +4,11 @@ package Dancer::Plugin::ValidationClass;
 
 use strict;
 use warnings;
+
 use Dancer ':syntax';
 use Dancer::Plugin;
 
-our $VERSION = '0.113180'; # VERSION
+our $VERSION = '0.113300'; # VERSION
 
 our $Self;
 
@@ -20,26 +21,26 @@ hook before => sub {
 # register the keyword
 register rules => sub {
     my @args = @_;
-    my $cfg  = plugin_setting || {};
-    
-    $Self = ref $Self ? $Self : instantiate($cfg->{options} || {}, @args);
+    my $cfg = plugin_setting || {};
+
+    $Self = ref $Self ? $Self : instantiate( $cfg || {}, @args );
 
     return $Self;
 };
 
 # instantiation routine
 sub instantiate {
-    my ($cfg, @args) = @_;
-    
+    my ( $cfg, @args ) = @_;
+
     #find validation class
     my $class = my $path = $cfg->{class};
     $class = setting('appname') . '::Validation' unless $class;
 
-    if ($class =~ /::/) {
+    if ( $class =~ /::/ ) {
         $path = "$class.pm";
         $path =~ s/::/\//g;
     }
-    elsif ($class =~ /\.pm$/) {
+    elsif ( $class =~ /\.pm$/ ) {
         $path = $class;
         $class =~ s/\.pm$//;
         $class =~ s/\//::/;
@@ -49,10 +50,10 @@ sub instantiate {
         no warnings 'redefine';
         require $path unless defined $Self;
     }
-    
-    my $args = { @args }; # specified params supersedes frameworks
+
+    my $args = {@args};    # specified params supersedes frameworks
     $cfg->{params} = { params() } unless $args->{params};
-    return $class->new(scalar keys %$args ? $args : $cfg);
+    return $class->new( scalar keys %$args ? $args : $cfg );
 }
 
 register_plugin;
@@ -68,7 +69,7 @@ Dancer::Plugin::ValidationClass - Centralized Input Validation For Dancer
 
 =head1 VERSION
 
-version 0.113180
+version 0.113300
 
 =head1 SYNOPSIS
 
