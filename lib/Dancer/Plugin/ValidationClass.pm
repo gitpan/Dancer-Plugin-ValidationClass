@@ -8,7 +8,7 @@ use warnings;
 use Dancer ':syntax';
 use Dancer::Plugin;
 
-our $VERSION = '0.113300'; # VERSION
+our $VERSION = '0.120490'; # VERSION
 
 our $Self;
 
@@ -34,7 +34,7 @@ sub instantiate {
 
     #find validation class
     my $class = my $path = $cfg->{class};
-    $class = setting('appname') . '::Validation' unless $class;
+       $class ||= setting('appname') . '::Validation';
 
     if ( $class =~ /::/ ) {
         $path = "$class.pm";
@@ -51,9 +51,10 @@ sub instantiate {
         require $path unless defined $Self;
     }
 
-    my $args = {@args};    # specified params supersedes frameworks
-    $cfg->{params} = { params() } unless $args->{params};
-    return $class->new( scalar keys %$args ? $args : $cfg );
+    my $args = {@args}; # specified params supersedes frameworks
+       $args->{params} ||= { params() };
+    
+    return $class->new(%{ $args });
 }
 
 register_plugin;
@@ -69,7 +70,7 @@ Dancer::Plugin::ValidationClass - Centralized Input Validation For Dancer
 
 =head1 VERSION
 
-version 0.113300
+version 0.120490
 
 =head1 SYNOPSIS
 

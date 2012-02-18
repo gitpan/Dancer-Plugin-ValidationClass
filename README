@@ -3,7 +3,7 @@ NAME
     Dancer
 
 VERSION
-    version 0.113300
+    version 0.120490
 
 SYNOPSIS
         use Dancer;
@@ -28,8 +28,8 @@ ADVANCED SYNOPSIS
         use Dancer::Plugin::ValidationClass;
 
         post '/authenticate/:login' => sub {
-            
-        # validate everything
+        
+            # validate everything
             unless (rules->validate()) {
                 return rules->errors->to_string('<br/>');
             }
@@ -44,10 +44,10 @@ CONFIGURATION
         plugins:
           ValidationClass:
             class: Foo::Bar
-            
-    or
         
-    plugins:
+        or
+    
+        plugins:
           ValidationClass:
             class: lib/Foo/Bar.pm
 

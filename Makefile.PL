@@ -23,7 +23,7 @@ my %WriteMakefileArgs = (
     "Dancer" => 0,
     "Validation::Class" => 0
   },
-  "VERSION" => "0.113300",
+  "VERSION" => "0.120490",
   "test" => {
     "TESTS" => "t/*.t"
   }
